@@ -17,7 +17,7 @@ import {
 } from 'src/constants/articleProps';
 import { Separator } from 'src/ui/separator';
 import { RadioGroup } from 'src/ui/radio-group';
-import { useOutsideClickClose } from 'src/ui/select/hooks/useOutsideClickClose';
+import { useClose } from 'src/hooks/useClose';
 
 export interface ArticleParamsFormProps {
 	onSubmit: (options: ArticleStateType) => void;
@@ -25,7 +25,7 @@ export interface ArticleParamsFormProps {
 
 export const ArticleParamsForm = ({ onSubmit }: ArticleParamsFormProps) => {
 	const [state, setState] = useState(defaultArticleState);
-	const [isOpen, setIsOpen] = useState(false);
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const ref = useRef<HTMLDivElement>(null);
 
 	const setDefaultState = () => {
@@ -33,32 +33,34 @@ export const ArticleParamsForm = ({ onSubmit }: ArticleParamsFormProps) => {
 		onSubmit(defaultArticleState);
 	};
 
-	const submitForm = (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+	const submitForm = (evt: React.FormEvent<EventTarget>) => {
 		evt.preventDefault();
 		onSubmit(state);
 	};
 	useEffect(() => {
-		console.log(isOpen);
+		console.log(isMenuOpen);
 	});
 
-	useOutsideClickClose({
-		isOpen,
+	useClose({
+		isOpen: isMenuOpen,
 		rootRef: ref,
-		onChange: setIsOpen,
+		onClose: () => setIsMenuOpen(false),
 	});
 
 	return (
 		<React.Fragment>
 			<ArrowButton
 				onClick={() => {
-					setIsOpen(!isOpen);
+					setIsMenuOpen(!isMenuOpen);
 				}}
-				isOpen={isOpen}
+				isOpen={isMenuOpen}
 			/>
 			<aside
-				className={clsx(styles.container, isOpen && styles.container_open)}
+				className={clsx(styles.container, {
+					[styles.container_open]: isMenuOpen,
+				})}
 				ref={ref}>
-				<form className={styles.form}>
+				<form className={styles.form} onSubmit={submitForm}>
 					<Text as='h2' size={31} weight={800} uppercase>
 						Задайте параметры
 					</Text>
@@ -132,12 +134,7 @@ export const ArticleParamsForm = ({ onSubmit }: ArticleParamsFormProps) => {
 							type='clear'
 							onClick={setDefaultState}
 						/>
-						<Button
-							title='Применить'
-							htmlType='submit'
-							type='apply'
-							onClick={submitForm}
-						/>
+						<Button title='Применить' htmlType='submit' type='apply' />
 					</div>
 				</form>
 			</aside>

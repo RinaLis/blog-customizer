@@ -10,7 +10,7 @@ export const Button = ({
 	type,
 }: {
 	title: string;
-	onClick: (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+	onClick?: (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 	htmlType?: React.ButtonHTMLAttributes<HTMLButtonElement>['type'];
 	type: 'apply' | 'clear';
 }) => {
@@ -23,7 +23,7 @@ export const Button = ({
 			)}
 			type={htmlType}
 			onClick={(evt) => {
-				onClick(evt);
+				if (onClick) onClick(evt);
 			}}>
 			<Text weight={800} uppercase>
 				{title}
